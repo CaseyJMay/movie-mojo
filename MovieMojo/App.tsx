@@ -1,11 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { NavBar } from './src/navigation/NavBar';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function App() {
   return (
-    <View className='w-full h-full flex flex-col justify-center'>
-      <Text className="text-pink-300 self-center">Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    
+    <NavigationContainer>
+      <View className='w-full h-full flex flex-col justify-center'>
+        <NavBar />
+      </View>
+    </NavigationContainer>
   );
 }
