@@ -4,6 +4,8 @@ export interface movie {
     image: string;
     description: string;
     genreList: string[];
-    streamingList: string[];
+    streamingList: StreamingService[];
     releaseYear: string;
 }
+
+type StreamingService = 'hulu' | 'netflix' | 'max' | 'peacock' | 'prime';
