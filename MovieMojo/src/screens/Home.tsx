@@ -1,128 +1,76 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  Image,
-  Text,
-  View,
-  Animated,
-  PanResponder,
-  Dimensions,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, Text } from 'react-native';
+import Swiper from 'react-native-deck-swiper';
 import { movies } from '../mockData';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const { width } = Dimensions.get('window');
-
-export default function Home() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    console.log(currentIndex);
-  }, [currentIndex]);
-
-  const translateX = useRef(new Animated.Value(0)).current;
-  const [nextIndex, setNextIndex] = useState(currentIndex + 1);
-
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: (event, gestureState) => {
-      translateX.setValue(gestureState.dx);
-    },
-    onPanResponderRelease: (event, gestureState) => {
-      if (gestureState.dx < -width / 4 && currentIndex < movies.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-        setNextIndex(nextIndex + 1);
-
-        Animated.timing(translateX, {
-          toValue: -width,
-          duration: 300,
-          useNativeDriver: true,
-        }).start(() => {
-          translateX.setValue(0);
-        });
-      } else {
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (nextIndex < movies.length) {
-      Image.prefetch(movies[nextIndex].image);
-    }
-  }, [nextIndex]);
-
-  return (
-    <View style={{ flex: 1 }}>
-      <Animated.View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          transform: [{ translateX }],
-        }}
-        {...panResponder.panHandlers}
-      >
-        <Image
-          style={{
-            flex: 1,
-            resizeMode: 'cover',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          source={{ uri: movies[currentIndex].image }}
-        />
-
-        {/* Next Image (Preloaded) */}
-        {nextIndex < movies.length && (
-          <Image
-            style={{
-              flex: 1,
-              resizeMode: 'cover',
-              position: 'absolute',
-              top: 0,
-              left: width,
-              width: width, // Make the next poster same width as the screen
-              right: 0,
-              bottom: 0,
-            }}
-            source={{ uri: movies[nextIndex].image }}
-          />
+const Home = () => {
+    // Step 1 & 2: Create and initialize the state
+    const [cardData, setCardData] = useState(movies);
+  
+  
+    return (
+      <View style={styles.container}>
+        <Swiper
+          cards={cardData} // Use state variable for cards
+        cardVerticalMargin={0}
+        cardHorizontalMargin={0}
+        renderCard={(card) => (
+          <View style={styles.card}>
+            <Image source={{ uri: card.image }} style={styles.image} />
+            <LinearGradient
+              colors={['rgba(0,0,0,.2)', 'rgba(0,0,0,1)']}
+              style={styles.linearGradient}
+            />
+            <View className='flex flex-col absolute bottom-[150px] left-[20px] w-full'>
+                <View className='max-w-[90%]'>
+                    <Text numberOfLines={2} className='text-[36px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.title}</Text>
+                </View>
+            </View>
+            <View className='flex flex-row absolute bottom-[115px] left-[20px] w-full gap-2'>
+                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.releaseYear}</Text>
+                <View className='rounded-full bg-[#FFFFFF] w-2 h-2 self-center' />
+                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.genreList[0]}</Text>
+                <View className='rounded-full bg-[#FFFFFF] w-2 h-2 self-center' />
+                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.genreList[1]}</Text>
+            </View>
+          </View>
         )}
-
-        {/* Overlay for Current Poster */}
-        <LinearGradient
-          colors={['transparent', 'black']}
-          style={{
-            flex: 1,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: -width,
-            bottom: 0,
-          }}
-          start={[0.5, 0]}
-          end={[0.5, 1]}
-        />
-
-        {/* Current Text */}
-        <Text
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            left: 5,
-            color: 'white',
-            fontSize: 30,
-            fontWeight: 'bold',
-          }}
-        >
-          {movies[currentIndex].title}
-        </Text>
-      </Animated.View>
+        cardIndex={0}
+        backgroundColor={'transparent'}
+        stackSize={3}
+        containerStyle={styles.swiperContainer}
+      />
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  swiperContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    width: '100%',
+    height: '100%',
+  },
+  card: {
+    flex: 1,
+    position: 'relative',
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  linearGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+});
+
+export default Home;
