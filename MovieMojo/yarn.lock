@@ -5748,7 +5748,7 @@ prompts@^2.3.2, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.7.2:
+prop-types@*, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -5878,6 +5878,13 @@ react-native-gesture-handler@^2.14.0:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
+react-native-masonry-list@^2.16.1:
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/react-native-masonry-list/-/react-native-masonry-list-2.16.1.tgz#111513018cb6f0b2a32fe7ca3243ed187dd41734"
+  integrity sha512-zELbfqZgWDkMnDPQep3okZkV3FayO+lWeVGKSYt8emjY7kmyU/ncm5o20lB2OaBmdHQWXDjeK/emzNa4cM9quA==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-reanimated@^3.6.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.6.1.tgz#5add41efafac6d0befd9786e752e7f26dbe903b7"
@@ -5892,6 +5899,13 @@ react-native-safe-area-context@^4.8.2:
   version "4.8.2"
   resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.8.2.tgz"
   integrity sha512-ffUOv8BJQ6RqO3nLml5gxJ6ab3EestPiyWekxdzO/1MQ7NF8fW1Mzh1C5QE9yq573Xefnc7FuzGXjtesZGv7cQ==
+
+react-native-super-grid@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-super-grid/-/react-native-super-grid-5.0.0.tgz#0cf9cfb86864198a1e6925d26496bd005b319e3e"
+  integrity sha512-iivBlleD7ufDtKSd74w1w86bvIzUXHaLjKwRuqMOUQwXxm5hoIGT8YtJiWtS5/bkH38xLw/T0eEn0NHFgzmYiA==
+  dependencies:
+    prop-types "^15.6.0"
 
 react-native-vector-icons@^10.0.3:
   version "10.0.3"

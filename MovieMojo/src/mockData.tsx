@@ -1,6 +1,6 @@
-import { movie } from "./types/types";
+import { Movie } from "./types/types";
 
-export const movies: movie[] = [{
+export const movies: Movie[] = [{
     id: '1',
     title: 'The Batman',
     image: 'https://i5.walmartimages.com/asr/9fea481e-c606-4ed7-b94c-3e1a020a3dd7.d3fca58269d598e0c600813db6eb07b4.jpeg',
