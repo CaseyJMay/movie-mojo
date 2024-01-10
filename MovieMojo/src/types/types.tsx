@@ -8,4 +8,4 @@ export interface Movie {
     releaseYear: string;
 }
 
-type StreamingService = 'hulu' | 'netflix' | 'max' | 'peacock' | 'prime';
+export type StreamingService = 'hulu' | 'netflix' | 'max' | 'peacock' | 'prime';

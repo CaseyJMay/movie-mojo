@@ -1,17 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavBar } from './src/navigation/NavBar';
-import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import RootNavigator from './src/navigation/RootNavigator';
+import { Provider } from 'react-redux';
+import { store } from './src/redux/Store';
 
 
 export default function App() {
   return (
-    
-    <NavigationContainer>
       <GestureHandlerRootView className='w-full h-full flex flex-col justify-center'>
-        <NavBar />
+        <Provider store={store}>
+        <RootNavigator />
+        </Provider>
       </GestureHandlerRootView>
-    </NavigationContainer>
   );
 }

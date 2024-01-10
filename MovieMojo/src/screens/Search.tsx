@@ -4,6 +4,9 @@ import { FlatGrid } from 'react-native-super-grid';
 import { movies } from '../mockData';
 import { Movie } from '../types/types';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { MoviePageProps, ScreenNavigationProps } from '../navigation/RootStackParamList';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -15,6 +18,7 @@ interface MovieWithDimensions extends Movie {
 const Search = () => {
   const [moviesWithDimensions, setMoviesWithDimensions] = useState<MovieWithDimensions[]>([]);
   const [searchText, setSearchText] = useState('');
+  const navigation = useNavigation<ScreenNavigationProps>();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -74,9 +78,9 @@ const Search = () => {
         renderItem={({ item }) => {
           const itemHeight = item.height / item.width * itemDimension;
           return (
-            <View style={[styles.itemContainer, { height: itemHeight }]}>
+            <TouchableOpacity onPress={() => navigation.navigate('MoviePage', {uri: item.image, title: item.title, description: item.description, genreList: item.genreList, releaseYear: item.releaseYear, streamingList: item.streamingList})} style={[styles.itemContainer, { height: itemHeight }]}>
               <Image source={{ uri: item.image }} style={styles.posterImage} />
-            </View>
+            </TouchableOpacity>
           );
         }}
       />

@@ -5,12 +5,14 @@ import Search from '../screens/Search';
 import WatchList from '../screens/WatchList';
 import Ionicons  from 'react-native-vector-icons/Ionicons';
 import React from 'react';
+import MoviePage from '../screens/MoviePage';
+import { RootStackParamList } from './RootStackParamList';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>();
 
 export function NavBar() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false, tabBarLabelStyle: {
+    <Tab.Navigator initialRouteName='HomeScreen' backBehavior='history' screenOptions={{ headerShown: false, tabBarLabelStyle: {
         display: "none"
       }, tabBarStyle: {
         paddingTop: 20,
@@ -21,7 +23,7 @@ export function NavBar() {
       }
 }}
         >
-      <Tab.Screen name="Home" component={Home}
+      <Tab.Screen name="HomeScreen" component={Home}
       options={{
         tabBarIcon: (tabInfo) => { 
             return ( 
@@ -65,6 +67,21 @@ export function NavBar() {
             return ( 
                 <Ionicons 
                 name="person"
+                size={tabInfo.focused ? 28 : 24} 
+                color={tabInfo.focused ? "#D4AF37" : "#8e8e93"} 
+                /> 
+            ); 
+        }
+        }}
+      />
+      <Tab.Screen name="MoviePage" component={MoviePage}
+        options={{
+          tabBarStyle: { display: "none" },
+          tabBarButton: (props) => null, //this is additional if you want to hide the tab element from the bottom nav
+          tabBarIcon: (tabInfo) => { 
+            return ( 
+                <Ionicons 
+                name="square"
                 size={tabInfo.focused ? 28 : 24} 
                 color={tabInfo.focused ? "#D4AF37" : "#8e8e93"} 
                 /> 

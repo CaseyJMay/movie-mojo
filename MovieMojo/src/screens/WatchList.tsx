@@ -1,9 +1,12 @@
-import { Image, Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { movies } from '../mockData';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNavigationProps } from '../navigation/RootStackParamList';
 
 export default function WatchList() {
+    const navigation = useNavigation<ScreenNavigationProps>();
     const streamingServiceIcons = {
         'hulu': require('../public/assets/hulu.png'),
         'netflix': require('../public/assets/netflix.png'),
@@ -17,7 +20,7 @@ export default function WatchList() {
             <SafeAreaView className='w-full h-full flex flex-col justify-start bg-black space-y-3'>
                     {movies.map((movie, index) => {
                         return (
-                            <View key={index} className='w-[95%] self-center h-[144px] bg-[#80040C] rounded-lg flex flex-row p-1 space-x-3'>
+                            <TouchableOpacity activeOpacity={.9} onPress={() => navigation.navigate('MoviePage', {uri: movie.image, title: movie.title, description: movie.description, genreList: movie.genreList, releaseYear: movie.releaseYear, streamingList: movie.streamingList})} key={index} className='w-[95%] self-center h-[144px] bg-[#80040C] rounded-lg flex flex-row p-1 space-x-3'>
                                 <Image className='h-[137px] w-[83px] rounded-md self-center' source={{ uri: movie.image }} />
                                 <View className='flex flex-col h-[85%] justify-around mt-2'>
                                     <View className='flex flex-col h-full py-1 w-[240px] space-y-2'>
@@ -43,7 +46,7 @@ export default function WatchList() {
                                         })}
                                     </View>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         );
                     })}
             </SafeAreaView>

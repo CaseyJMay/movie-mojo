@@ -1,35 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Image, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { deleteUser } from '../redux/actions/UserActions';
+
+
+export  type ActiveGenreListType = {
+    [key: string]: boolean;
+    action: boolean;
+    mystery: boolean;
+    thriller: boolean;
+    drama: boolean;
+    romance: boolean;
+    horror: boolean;
+    comedy: boolean;
+};
+
+export type ActiveStreamingListType = {
+    [key: string]: boolean;
+    max: boolean;
+    hulu: boolean;
+    netflix: boolean;
+    peacock: boolean;
+    prime: boolean;
+};
+
+export type StreamingServiceIcons = {
+    [key: string]: any;
+  };
+
 
 export default function Profile() {
 
-    type StreamingServiceIcons = {
-        [key: string]: any;
-      };
 
-      type ActiveGenreListType = {
-        [key: string]: boolean;
-        action: boolean;
-        mystery: boolean;
-        thriller: boolean;
-        drama: boolean;
-        romance: boolean;
-        horror: boolean;
-        comedy: boolean;
-    };
-
-    type ActiveStreamingListType = {
-        [key: string]: boolean;
-        max: boolean;
-        hulu: boolean;
-        netflix: boolean;
-        peacock: boolean;
-        prime: boolean;
-    };
-    
-
+    const [isSelectedShareData, setIsSelectedShareData] = useState(false);
+    const [isSelectedShowPurchase, setIsSelectedShowPurchase] = useState(false);
     const streamingList: string[] = ['max', 'hulu', 'netflix', 'peacock', 'prime'];
     const genreList: string[] = ['action', 'mystery', 'thriller', 'drama', 'romance', 'horror', 'comedy']
     const [activeGenres, setActiveGenres]= useState<ActiveGenreListType>({
@@ -41,6 +46,14 @@ export default function Profile() {
         'horror': false,
         'comedy': true,
     })
+
+    const [shouldDeleteUser, setShouldDeleteUser] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (shouldDeleteUser){
+            deleteUser()
+        }
+    }, [shouldDeleteUser])
 
     const [activeStreaming, setActiveStreaming]= useState<ActiveStreamingListType>({
         'max': true,
@@ -74,11 +87,21 @@ export default function Profile() {
 
   return (
     <SafeAreaView className='w-full h-full flex flex-col justify-start bg-black'>
+      <View className='w-full flex flex-row h-[40px] justify-end'>
+      <TouchableOpacity onPress={() => setShouldDeleteUser(true)}>
+            <Image 
+                    className='w-[30px] h-[30px] self-start mr-2'
+                    source={require('../public/assets/logout.png')} 
+                />
+        </TouchableOpacity>
+      </View>
       <View className='w-full flex flex-row justify-start space-x-4 ml-4'>
-      <Image 
-            className='w-[96px] h-[96px] self-center rounded-xl'
-            source={{uri: 'https://pbs.twimg.com/profile_images/1208234904405757953/mT0cFOVQ_400x400.jpg'}} 
-        />
+        <View className='border-2 border-[#D4AF37] rounded-2xl p-[2px]'>
+        <Image 
+                className='w-[96px] h-[96px] self-center rounded-xl'
+                source={{uri: 'https://pbs.twimg.com/profile_images/1208234904405757953/mT0cFOVQ_400x400.jpg'}} 
+            />
+        </View>
         <Text className='text-white text-2xl self-center'>@CaseyJMay3085</Text>
       </View>
       <Text className='text-2xl self-start ml-3 mt-4 text-[#D4AF37] font-bold mb-2'>Streaming</Text>
@@ -134,6 +157,25 @@ export default function Profile() {
             })}
             </View>
         </ScrollView>
+      </View>
+      <Text className='text-2xl self-start ml-3 mt-4 text-[#D4AF37] font-bold mb-2'>Preferences</Text>
+      <View className='flex flex-col space-y-3'>
+            <View className='flex flex-row space-x-3'>
+            <TouchableOpacity onPress={() => setIsSelectedShowPurchase(!isSelectedShowPurchase)} activeOpacity={1}>
+                    <View className='w-6 h-6 border-2 border-[#D4AF37] rounded-full ml-6 mt-3 flex flex-row justify-center'>
+                        {isSelectedShowPurchase && <View className='w-4 h-4 rounded-full bg-[#D4AF37] self-center'/>}
+                    </View>
+                </TouchableOpacity>
+                <Text className='text-white text-md font-bold self-center mt-3'>{'Show movies that require purchase.'}</Text>
+            </View>
+            <View className='flex flex-row space-x-3'>
+                <TouchableOpacity onPress={() => setIsSelectedShareData(!isSelectedShareData)} activeOpacity={1}>
+                    <View className='w-6 h-6 border-2 border-[#D4AF37] rounded-full ml-6 mt-3 flex flex-row justify-center'>
+                        {isSelectedShareData && <View className='w-4 h-4 rounded-full bg-[#D4AF37] self-center'/>}
+                    </View>
+                </TouchableOpacity>
+                <Text className='text-white text-md font-bold self-center mt-3'>{'Share your data to help the developers.'}</Text>
+            </View>
       </View>
     </SafeAreaView>
   );
