@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Text, ImageBackground, TouchableOpacity } from 'react-native';
 import { saveUser } from '../redux/actions/UserActions';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { GET_USER_BY_USERNAME } from '../graphql/getUserByUsername';
 
 const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [ getUserByUsername, { loading, error, data }] = useLazyQuery(GET_USER_BY_USERNAME, {
+    variables: { username: username },
+  });
 
-  const handleLogin = () => {
+  async function handleLogin(){
     // Implement login logic here
     console.log('Login pressed', username, password);
-    saveUser('xyzi', {username: 'hello', email: 'caseyjmay13@gmail.com', location: 'USA', thumbnail: 'blank', description: 'description'});
+    await getUserByUsername().catch(() => console.log('query failed'))
+    if (data && data.getUserByUsername.password == password){
+      saveUser('xyzi', {username: 'hello', email: 'caseyjmay13@gmail.com', location: 'USA', thumbnail: 'blank', description: 'description'});
+    }
+    else {
+      return
+    }
   };
 
   return (
@@ -23,6 +34,7 @@ const LoginScreen: React.FC = () => {
         placeholderTextColor={'#BB9D6F'}
         value={username}
         onChangeText={setUsername}
+        autoCapitalize='none'
       />
       <TextInput
         style={styles.input}
@@ -30,6 +42,7 @@ const LoginScreen: React.FC = () => {
         placeholderTextColor={'#BB9D6F'}
         value={password}
         onChangeText={setPassword}
+        autoCapitalize='none'
         secureTextEntry
       />
       <View className='w-full h-[50px] flex flex-row justify-start'>

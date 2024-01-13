@@ -1,6 +1,7 @@
-const { buildSchema } = require('graphql');
+const { buildSchema } = require("graphql");
 
-module.exports = buildSchema(`
+// Define your GraphQL schema
+const schema = buildSchema(`
   type User {
     id: ID!
     username: String!
@@ -10,13 +11,10 @@ module.exports = buildSchema(`
   }
 
   type Query {
-    getUser(id: ID!): User
     getAllUsers: [User]
-  }
-
-  type Mutation {
-    createUser(username: String!, password: String!, email: String): User
-    updateUser(id: ID!, username: String, password: String, email: String): User
-    deleteUser(id: ID!): String
+    getUser(id: ID!): User
+    getUserByUsername(username: String!): User
   }
 `);
+
+module.exports = schema;

@@ -1,52 +1,46 @@
 
-const {  getUserById,
-    getAllUsers,
-    createUser,
-    updateUser,
-    deleteUser} = require('../../models/userModel')
+const { query } = require('../../models/database');
 
-const userResolvers = {
-  Query: {
-    // Resolver for getUser query
-    getUser: async (_, { id }) => {
-      // Implement logic to retrieve a user by ID from the database
-      console.log("getAllUsers query received");
-      const user = await getUserById(id);
-      return user;
-    },
-    // Resolver for getAllUsers query
+// Define your resolver functions
+const root = {
     getAllUsers: async () => {
-        let users = []; // Initialize users as an empty array
-        console.log("getAllUsers query received");
+    let users = []; // Initialize users as an empty array
+    console.log("getAllUsers query received");
+    try {
+        users = await query('SELECT * FROM users');
+        return users;
+    } catch (error) {
+        console.log('Error fetching users:', error);
+    }
+    return users; // Now users is accessible here
+    },
+    getUser: async ({ id }) => {
         try {
-          users = await getAllUsers();
+          const user = await query('SELECT * FROM users WHERE id = $1', [id]);
+          if (user.length > 0) {
+            return user[0]; // Return the first user from the result
+          } else {
+            throw new Error(`User with ID ${id} not found`);
+          }
         } catch (error) {
-          console.log('Error fetching users:', error);
+          console.log(`Error fetching user with ID ${id}:`, error);
+          throw error; // Re-throw the error to be handled by GraphQL
         }
-        return users; // Now users is accessible here
       },
-  },
-  Mutation: {
-    // Resolver for createUser mutation
-    createUser: async (_, { username, password, email }) => {
-      // Implement logic to create a new user
-      // Remember to hash the password before storing it
-      const newUser = await createUser({ username, password, email });
-      return newUser;
+    getUserByUsername: async ({ username }) => {
+    try {
+        const user = await query('SELECT * FROM users WHERE username = $1', [username]);
+        if (user.length > 0) {
+        return user[0]; // Return the first user from the result
+        } else {
+        throw new Error(`User with username ${username} not found`);
+        }
+    } catch (error) {
+        console.log(`Error fetching user with username ${username}:`, error);
+        throw error; // Re-throw the error to be handled by GraphQL
+    }
     },
-    // Resolver for updateUser mutation
-    updateUser: async (_, { id, username, password, email }) => {
-      // Implement logic to update an existing user
-      const updatedUser = await updateUser({ id, username, password, email });
-      return updatedUser;
-    },
-    // Resolver for deleteUser mutation
-    deleteUser: async (_, { id }) => {
-      // Implement logic to delete a user
-      await deleteUser(id);
-      return `User with ID ${id} was deleted.`;
-    },
-  },
 };
 
-module.exports = userResolvers;
+module.exports = root;
+
