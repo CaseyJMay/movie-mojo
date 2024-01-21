@@ -18,8 +18,8 @@ const PreloginScreen: React.FC = () => {
     <ImageBackground source={require('../public/assets/prelogin.png')}>
       <View className='w-full h-full flex flex-col justify-end pb-[40px]'>
         <TouchableOpacity onPress={() => navToLogin()}>
-          <View className='w-[180px] self-center border-2 border-[#BB9D6F] rounded-full px-3 py-2'>
-            <Text className='text-[#BB9D6F] text-[20px] rounded-full text-center font-bold'>Login</Text>
+          <View className='w-[180px] self-center border-2 border-[#D4AF37] rounded-full px-3 py-2'>
+            <Text className='text-[#D4AF37] text-[20px] rounded-full text-center font-bebas'>LOGIN</Text>
           </View>
         </TouchableOpacity>
       </View>

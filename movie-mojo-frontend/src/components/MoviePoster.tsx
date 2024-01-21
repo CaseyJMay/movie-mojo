@@ -17,7 +17,7 @@ const MoviePoster: React.FC<MoviePosterProps> = ({ uri }) => {
   }, [uri]);
 
   return (
-    <View className='w-[80%] self-center h-fit' style={{ height: imageHeight, width: imageWidth, position: 'relative' }}>
+    <View className='self-center h-fit' style={{ height: imageHeight, width: imageWidth, position: 'relative' }}>
       {isLoading && (
         <ActivityIndicator size="large" color="#0000ff" style={{ position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -25 }, { translateY: -25 }] }} />
       )}

@@ -38,7 +38,7 @@ const Home = () => {
             </View>
             <View className='flex flex-col absolute bottom-[150px] left-[20px] w-full'>
                 <View className='max-w-[90%]'>
-                    <Text numberOfLines={2} className='text-[36px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.title}</Text>
+                    <Text numberOfLines={2} className='text-[36px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis font-bebas'>{card.title}</Text>
                 </View>
             </View>
             <View className='flex flex-row absolute bottom-[115px] left-[20px] w-full gap-2'>

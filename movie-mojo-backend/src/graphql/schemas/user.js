@@ -10,10 +10,19 @@ const schema = buildSchema(`
     created_at: String
   }
 
+  type Movie {
+    id: ID!
+    title: String!
+    posterPath: String
+    description: String!
+    releaseDate: String!
+  }
+
   type Query {
     getAllUsers: [User]
     getUser(id: ID!): User
     getUserByUsername(username: String!): User
+    getMoviesBySearchTerm(searchTerm: String!): [Movie]
   }
 `);
 

@@ -20,21 +20,12 @@ export default function WatchList() {
             <SafeAreaView className='w-full h-full flex flex-col justify-start bg-black space-y-3'>
                     {movies.map((movie, index) => {
                         return (
-                            <TouchableOpacity activeOpacity={.9} onPress={() => navigation.navigate('MoviePage', {uri: movie.image, title: movie.title, description: movie.description, genreList: movie.genreList, releaseYear: movie.releaseYear, streamingList: movie.streamingList})} key={index} className='w-[95%] self-center h-[144px] bg-[#80040C] rounded-lg flex flex-row p-1 space-x-3'>
-                                <Image className='h-[137px] w-[83px] rounded-md self-center' source={{ uri: movie.image }} />
+                            <TouchableOpacity activeOpacity={.9} onPress={() => navigation.navigate('MoviePage', {uri: movie.image, title: movie.title, description: movie.description, genreList: movie.genreList, releaseYear: movie.releaseYear, streamingList: movie.streamingList})} key={index} className='w-[95%] self-center h-[140px] bg-[#3D3D3D] rounded-lg flex flex-row p-1 space-x-3'>
+                                <Image className='h-[133px] w-[83px] rounded-md self-center' source={{ uri: movie.image }} />
                                 <View className='flex flex-col h-[85%] justify-around mt-2'>
                                     <View className='flex flex-col h-full py-1 w-[240px] space-y-2'>
-                                        <Text numberOfLines={2} className='text-white text-[23px] font-bold text-ellipsis'>{movie.title}</Text>
-                                        <View key={index} className='flex flex-row justify-start space-x-2'>
-                                            <Text className='text-[#D4AF37] text-[14px] font-bold'>{movie.releaseYear}</Text>
-                                            {movie.genreList.map((genre, index) => {
-                                                return (
-                                                    <Text key={index} className='text-white text-[14px] font-bold'>{genre}</Text>
-                                                )
-                                            })}
-                                        </View>
-                                    </View>
-                                    <View className='w-fit h-fit flex flex-row space-x-2'>
+                                        <Text numberOfLines={2} className='text-white text-[18px] font-bold text-ellipsis'>{`${movie.title} (${movie.releaseYear})`}</Text>
+                                        <View className='w-fit h-fit flex flex-row space-x-2 mt-[1px]'>
                                         {movie.streamingList.map((streamingService, index) => {
                                             return (
                                                 <Image 
@@ -45,6 +36,16 @@ export default function WatchList() {
                                             );
                                         })}
                                     </View>
+                                    </View>
+                                    <View key={index} className=' w-[240px] flex flex-row justify-start flex-wrap max-h-[36px] overflow-hidden mt-2'>
+                                            {movie.genreList.map((genre, index) => {
+                                                return (
+                                                    <View  key={index} className='border border-1 border-white p-1 rounded-full mr-2 my-1'>
+                                                        <Text className='text-white text-[12px] font-bold mx-1'>{genre}</Text>
+                                                    </View>
+                                                )
+                                            })}
+                                        </View>
                                 </View>
                             </TouchableOpacity>
                         );

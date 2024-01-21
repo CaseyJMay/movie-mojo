@@ -7,6 +7,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { MoviePageProps, ScreenNavigationProps } from '../navigation/RootStackParamList';
+import { GET_MOVIES_BY_SEARCH_TERM } from '../graphql/getMoviesBySearchTerm';
+import { useQuery } from '@apollo/client';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -18,7 +20,21 @@ interface MovieWithDimensions extends Movie {
 const Search = () => {
   const [moviesWithDimensions, setMoviesWithDimensions] = useState<MovieWithDimensions[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [searchedMovies, setSearchedMovies] = useState(movies)
   const navigation = useNavigation<ScreenNavigationProps>();
+  const {loading, error, data} = useQuery(GET_MOVIES_BY_SEARCH_TERM, {variables: {searchTerm: searchText}, onError: (error) => console.log(JSON.stringify(error))});
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (searchText) {
+      console.log("set search text", searchText);
+    }
+  }, [searchText]);
 
   useEffect(() => {
     const loadImages = async () => {
@@ -29,7 +45,7 @@ const Search = () => {
         };
       
         const loadedMovies: MovieWithDimensions[] = await Promise.all(
-          movies.map(async (movie): Promise<MovieWithDimensions> => {
+          searchedMovies.map(async (movie): Promise<MovieWithDimensions> => {
             try {
               const dimensions = await new Promise<ImageDimensions>((resolve, reject) => {
                 Image.getSize(movie.image, (width, height) => {

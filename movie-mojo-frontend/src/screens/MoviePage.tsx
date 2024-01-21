@@ -25,26 +25,32 @@ const MoviePage = ({route}: any) => {
     <ScrollView className=''>
         <LinearGradient
             className='w-full h-[120%] absolute'
-            colors={['gray', 'black']}
+            colors={['#3D3D3D', '#3D3D3D']}
         />
-        <SafeAreaView className='bg-transparent w-full h-full justify-start px-0'>
-            <TouchableOpacity onPress={() => navigation.goBack()} >
-                <Image className="h-[30px] w-[30px] ml-4 mb-3" source={require('../public/assets/back.png')} />
-            </TouchableOpacity>
-            <MoviePoster key={params.uri} uri={params.uri} />
-            <View className='w-fit h-fit flex flex-row space-x-2 self-start ml-4 mt-5'>
-            {params.streamingList.map((streamingService: any, index: number) => {
-                return (
-                    <Image 
-                        key={index}
-                        className='w-[38px] h-[38px] self-center rounded-md'
-                        source={streamingServiceIcons[streamingService]} 
-                    />
-                );
-            })}
+        <SafeAreaView className='bg-transparent w-full h-full justify-start'>
+            <View className='flex flex-row justify-start space-x-4 mb-2 w-[80%]'>
+                <View className='flex flex-col justify-center'>
+                    <TouchableOpacity onPress={() => navigation.goBack()} >
+                        <Image className="h-[35px] w-[35px] ml-4 self-center" source={require('../public/assets/back.png')} />
+                    </TouchableOpacity>
+                </View>
+                <Text numberOfLines={2} className='text-[45px] self-center ml-3 text-white font-bold text-left text-ellipsis font-bebas'>{`${params.title}`}</Text>
             </View>
-            <Text numberOfLines={2} className='text-[28px] self-start ml-3 mt-4 text-white font-bold mb-2 text-left text-ellipsis'>{`${params.title}`}</Text>
-            <Text numberOfLines={5} className='text-[12 px] self-start ml-3 mt-4 text-white font-bold mb-2 text-left text-ellipsis w-[90%]'>{`${params.description}`}</Text>
+            <MoviePoster key={params.uri} uri={params.uri} />
+            <Text numberOfLines={5} className='text-[14px] self-start ml-[5%] text-white font-bold mb-2 mt-5 text-left text-ellipsis w-[90%]'>{`${params.description}`}</Text>
+            <View className='w-full h-fit p-2 bg-[#A9A9A945] mt-2'>
+                <View className='w-fit h-fit flex flex-row space-x-2 self-start ml-2'>
+                {params.streamingList.map((streamingService: any, index: number) => {
+                    return (
+                        <Image 
+                            key={index}
+                            className='w-[38px] h-[38px] self-center rounded-md'
+                            source={streamingServiceIcons[streamingService]} 
+                        />
+                    );
+                })}
+                </View>
+            </View>
             <View className='w-screen h-fit flex flex-row space-x-2 self-start ml-4 mt-2 flex-wrap'>
                 {params.genreList.map((genre: any, index: any) => {
                     return (
