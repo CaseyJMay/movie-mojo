@@ -10,12 +10,20 @@ const schema = buildSchema(`
     created_at: String
   }
 
+  type Provider {
+    logo_path: String!
+    provider_id: ID!
+    provider_name: String!
+    display_priority: Int!
+  }
+
   type Movie {
     id: ID!
     title: String!
     posterPath: String
     description: String!
     releaseDate: String!
+    watchProviders: [Provider]
   }
 
   type Query {

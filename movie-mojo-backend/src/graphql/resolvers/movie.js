@@ -19,8 +19,6 @@ const root = {
               return null;
             }
       }
-      const providers = await fetchWatchProviders(27205)
-      console.log(providers)
       let encodedText = searchTerm.replace(/ /g, "%20");
       const url = `https://api.themoviedb.org/3/search/movie?query=${encodedText}&include_adult=false&language=en-US&page=1`;
       const options = {
@@ -39,14 +37,15 @@ const root = {
         if (json && Array.isArray(json.results)) {
             const moviesWithProviders = await Promise.all(json.results.map(async (movie) => {
               const providers = await fetchWatchProviders(movie.id);
-              console.log(providers)
+              const USproviders = providers && providers.US
+              const StreamingUS = USproviders && USproviders.flatrate
               return {
                 id: movie.id,
                 title: movie.title,
                 description: movie.overview,
                 releaseDate: movie.release_date,
                 posterPath: movie.poster_path,
-                // watchProviders: providers // Add the watch providers to the movie object
+                watchProviders: StreamingUS // Add the watch providers to the movie object
               };
             }));
       

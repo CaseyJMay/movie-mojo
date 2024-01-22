@@ -8,6 +8,11 @@ export const GET_MOVIES_BY_SEARCH_TERM = gql`
       description
       releaseDate
       posterPath
+      watchProviders {
+        logo_path
+        provider_name
+        display_priority
+      }
     }
   }
 `;
