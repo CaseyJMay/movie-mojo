@@ -24,6 +24,7 @@ const schema = buildSchema(`
     description: String!
     releaseDate: String!
     watchProviders: [Provider]
+    genreList: [Int!]
   }
 
   type Query {

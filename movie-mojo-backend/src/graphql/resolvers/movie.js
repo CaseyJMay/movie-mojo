@@ -45,7 +45,8 @@ const root = {
                 description: movie.overview,
                 releaseDate: movie.release_date,
                 posterPath: movie.poster_path,
-                watchProviders: StreamingUS // Add the watch providers to the movie object
+                watchProviders: StreamingUS,
+                genreList: movie.genre_ids,
               };
             }));
       

@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator<RootStackParamList>();
 
 export function NavBar() {
   return (
-    <Tab.Navigator initialRouteName='HomeScreen' backBehavior='history' screenOptions={{ headerShown: false, tabBarLabelStyle: {
+    <Tab.Navigator initialRouteName='Search' backBehavior='history' screenOptions={{ headerShown: false, tabBarLabelStyle: {
         display: "none"
       }, tabBarStyle: {
         paddingTop: 20,

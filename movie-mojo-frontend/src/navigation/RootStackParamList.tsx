@@ -2,7 +2,7 @@ import type {
     BottomTabNavigationProp,
     BottomTabScreenProps,
   } from "@react-navigation/bottom-tabs";
-import { StreamingService } from "../types/types";
+import { Provider } from "../types/types";
   
   export type RootStackParamList = {
     HomeScreen: undefined;
@@ -13,9 +13,9 @@ import { StreamingService } from "../types/types";
         uri: string;
         title: string;
         description: string;
-        genreList: string[];
+        genreList: number[];
         releaseYear: string;
-        streamingList: StreamingService[];
+        streamingList: Provider[];
       };
   };
 

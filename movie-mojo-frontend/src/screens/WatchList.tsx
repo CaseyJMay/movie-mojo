@@ -19,19 +19,21 @@ export default function WatchList() {
         <ScrollView>
             <SafeAreaView className='w-full h-full flex flex-col justify-start bg-black space-y-3'>
                     {movies.map((movie, index) => {
+                        const imageUri = `http://image.tmdb.org/t/p/original${movie.posterPath}`
                         return (
-                            <TouchableOpacity activeOpacity={.9} onPress={() => navigation.navigate('MoviePage', {uri: movie.image, title: movie.title, description: movie.description, genreList: movie.genreList, releaseYear: movie.releaseYear, streamingList: movie.streamingList})} key={index} className='w-[95%] self-center h-[140px] bg-[#3D3D3D] rounded-lg flex flex-row p-1 space-x-3'>
-                                <Image className='h-[133px] w-[83px] rounded-md self-center' source={{ uri: movie.image }} />
+                            <TouchableOpacity activeOpacity={.9} onPress={() => navigation.navigate('MoviePage', {uri: movie.posterPath, title: movie.title, description: movie.description, genreList: movie.genreList, releaseYear: movie.releaseDate, streamingList: movie.watchProviders})} key={index} className='w-[95%] self-center h-[140px] bg-[#3D3D3D] rounded-lg flex flex-row p-1 space-x-3'>
+                                <Image className='h-[133px] w-[83px] rounded-md self-center' source={{ uri: imageUri }} />
                                 <View className='flex flex-col h-[85%] justify-around mt-2'>
                                     <View className='flex flex-col h-full py-1 w-[240px] space-y-2'>
-                                        <Text numberOfLines={2} className='text-white text-[18px] font-bold text-ellipsis'>{`${movie.title} (${movie.releaseYear})`}</Text>
+                                        <Text numberOfLines={2} className='text-white text-[18px] font-bold text-ellipsis'>{`${movie.title} (${movie.releaseDate})`}</Text>
                                         <View className='w-fit h-fit flex flex-row space-x-2 mt-[1px]'>
-                                        {movie.streamingList.map((streamingService, index) => {
+                                        {movie.watchProviders.map((streamingService, index) => {
+                                            const streamingServiceIcon = `http://image.tmdb.org/t/p/original${streamingService.logo_path}`
                                             return (
                                                 <Image 
                                                     key={index}
                                                     className='w-[38px] h-[38px] self-center rounded-md'
-                                                    source={streamingServiceIcons[streamingService]} 
+                                                    source={{uri: streamingServiceIcon}} 
                                                 />
                                             );
                                         })}

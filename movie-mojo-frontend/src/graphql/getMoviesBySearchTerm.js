@@ -13,6 +13,7 @@ export const GET_MOVIES_BY_SEARCH_TERM = gql`
         provider_name
         display_priority
       }
+      genreList
     }
   }
 `;

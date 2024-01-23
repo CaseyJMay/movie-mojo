@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Image, StyleSheet, View, Dimensions, TextInput } from 'react-native';
 import { FlatGrid } from 'react-native-super-grid';
 import { movies } from '../mockData';
 import { Movie } from '../types/types';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { MoviePageProps, ScreenNavigationProps } from '../navigation/RootStackParamList';
 import { GET_MOVIES_BY_SEARCH_TERM } from '../graphql/getMoviesBySearchTerm';
 import { useQuery } from '@apollo/client';
+import { ScreenNavigationProps } from '../navigation/RootStackParamList';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,72 +19,88 @@ interface MovieWithDimensions extends Movie {
 
 const Search = () => {
   const [moviesWithDimensions, setMoviesWithDimensions] = useState<MovieWithDimensions[]>([]);
-  const [searchText, setSearchText] = useState('');
-  const [searchedMovies, setSearchedMovies] = useState(movies)
+  const [searchText, setSearchText] = useState(''); // State for search bar input
+  const [searchedMovies, setSearchedMovies] = useState([]);
+  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // State for debounced query
   const navigation = useNavigation<ScreenNavigationProps>();
-  const {loading, error, data} = useQuery(GET_MOVIES_BY_SEARCH_TERM, {variables: {searchTerm: searchText}, onError: (error) => console.log(JSON.stringify(error))});
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debounce = (func: () => void, delay: number) => {
+    if (debounceTimeoutRef.current !== null) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(func, delay);
+  };
+
+  const handleSearchTextChange = (text: string) => {
+    setSearchText(text); // Update the searchText immediately
+    debounce(() => setDebouncedSearchText(text), 1000); // Update debouncedSearchText after a delay
+  };
+
+  const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
+    variables: { searchTerm: debouncedSearchText },
+    onError: (error) => console.log(JSON.stringify(error))
+  });
 
   useEffect(() => {
     if (data) {
-      console.log(data);
+      if (data.getMoviesBySearchTerm.length === 0) {
+        return;
+      }
+      const movieList = data.getMoviesBySearchTerm;
+      setSearchedMovies(movieList);
     }
   }, [data]);
 
   useEffect(() => {
-    if (searchText) {
-      console.log("set search text", searchText);
-    }
-  }, [searchText]);
-
-  useEffect(() => {
     const loadImages = async () => {
-        // Define a type for the dimensions
-        type ImageDimensions = {
-          width: number;
-          height: number;
-        };
-      
-        const loadedMovies: MovieWithDimensions[] = await Promise.all(
-          searchedMovies.map(async (movie): Promise<MovieWithDimensions> => {
-            try {
-              const dimensions = await new Promise<ImageDimensions>((resolve, reject) => {
-                Image.getSize(movie.image, (width, height) => {
-                  resolve({ width, height });
-                }, reject);
-              });
-      
-              return {
-                ...movie,
-                ...dimensions,
-              };
-            } catch (error) {
-              console.error("Error loading image:", movie.image, error);
-              return { ...movie, width: 0, height: 0 }; // Fallback for images that failed to load
-            }
-          })
-        );
-      
-        setMoviesWithDimensions(loadedMovies);
+      type ImageDimensions = {
+        width: number;
+        height: number;
       };
 
+      const loadedMovies: MovieWithDimensions[] = await Promise.all(
+        searchedMovies.map(async (movie: Movie): Promise<MovieWithDimensions> => {
+          const movieImage = movie.posterPath ? `http://image.tmdb.org/t/p/original${movie.posterPath}` : `http://image.tmdb.org/t/p/original/9GBhzXMFjgcZ3FdR9w3bUMMTps5.jpg`;
+          try {
+            const dimensions = await new Promise<ImageDimensions>((resolve, reject) => {
+              Image.getSize(movieImage, (width, height) => {
+                resolve({ width, height });
+              }, reject);
+            });
+
+            return {
+              ...movie,
+              ...dimensions,
+            };
+          } catch (error) {
+            console.error("Error loading image:", movie.posterPath, error);
+            return { ...movie, width: 0, height: 0 };
+          }
+        })
+      );
+
+      setMoviesWithDimensions(loadedMovies);
+    };
+
     loadImages();
-  }, []);
+  }, [searchedMovies]);
 
   const itemDimension = screenWidth / 2;
 
   return (
     <View style={styles.container}>
       <View className='h-fit w-full border-b border-b-[#D4AF37]'>
-      <View style={styles.inputContainer}>
-        <Ionicons name="ios-search" size={20} color="#D4AF37" style={styles.searchIcon} />
-        <TextInput
-          style={styles.input}
-          onChangeText={setSearchText}
-          value={searchText}
-          placeholder="Search for movies..."
-          placeholderTextColor="#D4AF37"
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Ionicons name="ios-search" size={20} color="#D4AF37" style={styles.searchIcon} />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleSearchTextChange}
+            value={searchText}
+            placeholder="Search for movies..."
+            placeholderTextColor="#D4AF37"
+          />
+        </View>
       </View>
       <FlatGrid
         itemDimension={itemDimension}
@@ -93,9 +109,13 @@ const Search = () => {
         spacing={0}
         renderItem={({ item }) => {
           const itemHeight = item.height / item.width * itemDimension;
+          const movieImage = item.posterPath 
+            ? { uri: `http://image.tmdb.org/t/p/original${item.posterPath}` }
+            : require('../public/assets/Placeholder.png');
+
           return (
-            <TouchableOpacity onPress={() => navigation.navigate('MoviePage', {uri: item.image, title: item.title, description: item.description, genreList: item.genreList, releaseYear: item.releaseYear, streamingList: item.streamingList})} style={[styles.itemContainer, { height: itemHeight }]}>
-              <Image source={{ uri: item.image }} style={styles.posterImage} />
+            <TouchableOpacity onPress={() => navigation.navigate('MoviePage', { uri: movieImage.uri ? movieImage.uri : '', title: item.title, description: item.description, genreList: item.genreList, releaseYear: item.releaseDate, streamingList: item.watchProviders ? item.watchProviders : [] })} style={[styles.itemContainer, { height: itemHeight }]}>
+              <Image source={movieImage} style={styles.posterImage} />
             </TouchableOpacity>
           );
         }}
