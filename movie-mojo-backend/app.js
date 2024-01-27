@@ -12,5 +12,6 @@ app.use(
     graphiql: true,
   })
 );
-app.listen(4000);
+var customIPAddress = '10.0.0.169'; // Replace with your desired IP address
+app.listen(4000, customIPAddress);
 console.log("Running a GraphQL API server at http://localhost:4000/graphql");

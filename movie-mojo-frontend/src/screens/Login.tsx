@@ -10,12 +10,15 @@ const LoginScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [ getUserByUsername, { loading, error, data }] = useLazyQuery(GET_USER_BY_USERNAME, {
     variables: { username: username },
+    onError: (error) => {console.log(error)}
   });
 
   async function handleLogin(){
     try {
       setIsLoading(true)
+      console.log('looking for user')
       await getUserByUsername().catch(() => console.log('query failed'))
+      console.log('found user')
     }
     catch (error) {
       console.log(error, 'query failed')
@@ -24,7 +27,9 @@ const LoginScreen: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log(data.getUserByUsername.password, password )
     if (data && data.getUserByUsername.password === password){
+      console.log('here')
       saveUser('xyzi', {username: 'hello', email: 'caseyjmay13@gmail.com', location: 'USA', thumbnail: 'blank', description: 'description'});
       setIsLoading(false)
     }

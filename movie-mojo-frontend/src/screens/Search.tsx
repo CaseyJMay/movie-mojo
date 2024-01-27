@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Image, StyleSheet, View, Dimensions, TextInput } from 'react-native';
 import { FlatGrid } from 'react-native-super-grid';
-import { movies } from '../mockData';
-import { Movie } from '../types/types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { GET_MOVIES_BY_SEARCH_TERM } from '../graphql/getMoviesBySearchTerm';
 import { useQuery } from '@apollo/client';
+import LoadingComponent from '../components/Loading';
+import { GET_MOVIES_BY_SEARCH_TERM } from '../graphql/getMoviesBySearchTerm';
+import { Movie } from '../types/types';
 import { ScreenNavigationProps } from '../navigation/RootStackParamList';
 
 const screenWidth = Dimensions.get('window').width;
@@ -15,13 +15,17 @@ const screenWidth = Dimensions.get('window').width;
 interface MovieWithDimensions extends Movie {
   width: number;
   height: number;
+  onImageLoadStart: () => void;
+  onImageLoadEnd: () => void;
 }
 
 const Search = () => {
   const [moviesWithDimensions, setMoviesWithDimensions] = useState<MovieWithDimensions[]>([]);
-  const [searchText, setSearchText] = useState(''); // State for search bar input
-  const [searchedMovies, setSearchedMovies] = useState([]);
-  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // State for debounced query
+  const [searchText, setSearchText] = useState('');
+  const [searchedMovies, setSearchedMovies] = useState<Movie[]>([]);
+  const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const [loadingImagesCount, setLoadingImagesCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);  // Reintroduce isLoading state
   const navigation = useNavigation<ScreenNavigationProps>();
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,8 +37,10 @@ const Search = () => {
   };
 
   const handleSearchTextChange = (text: string) => {
-    setSearchText(text); // Update the searchText immediately
-    debounce(() => setDebouncedSearchText(text), 1000); // Update debouncedSearchText after a delay
+    setSearchText(text);
+    setLoadingImagesCount(0); // Reset loading images count
+    setIsLoading(true);       // Start loading as soon as typing starts
+    debounce(() => setDebouncedSearchText(text), 300);
   };
 
   const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
@@ -45,6 +51,7 @@ const Search = () => {
   useEffect(() => {
     if (data) {
       if (data.getMoviesBySearchTerm.length === 0) {
+        setIsLoading(false); // Stop loading if no data
         return;
       }
       const movieList = data.getMoviesBySearchTerm;
@@ -53,36 +60,56 @@ const Search = () => {
   }, [data]);
 
   useEffect(() => {
+    if (loadingImagesCount == 0){
+      setIsLoading(false)
+    }
+    else {
+      setIsLoading(true)
+    }
+  }, [loadingImagesCount])
+
+  useEffect(() => {
     const loadImages = async () => {
       type ImageDimensions = {
         width: number;
         height: number;
       };
-
+  
+      const validMovies = searchedMovies.filter(movie => movie.posterPath);
+  
       const loadedMovies: MovieWithDimensions[] = await Promise.all(
-        searchedMovies.map(async (movie: Movie): Promise<MovieWithDimensions> => {
-          const movieImage = movie.posterPath ? `http://image.tmdb.org/t/p/original${movie.posterPath}` : `http://image.tmdb.org/t/p/original/9GBhzXMFjgcZ3FdR9w3bUMMTps5.jpg`;
+        validMovies.map(async (movie: Movie): Promise<MovieWithDimensions> => {
+          const movieImage = `http://image.tmdb.org/t/p/original${movie.posterPath}`;
+  
           try {
             const dimensions = await new Promise<ImageDimensions>((resolve, reject) => {
               Image.getSize(movieImage, (width, height) => {
                 resolve({ width, height });
               }, reject);
             });
-
+  
             return {
               ...movie,
               ...dimensions,
+              onImageLoadStart: () => setLoadingImagesCount(prevCount => prevCount + 1),
+              onImageLoadEnd: () => setLoadingImagesCount(prevCount => prevCount - 1),
             };
           } catch (error) {
             console.error("Error loading image:", movie.posterPath, error);
-            return { ...movie, width: 0, height: 0 };
+            return { 
+              ...movie, 
+              width: 0, 
+              height: 0, 
+              onImageLoadStart: () => setLoadingImagesCount(prevCount => prevCount + 1),
+              onImageLoadEnd: () => setLoadingImagesCount(prevCount => prevCount - 1),
+            };
           }
         })
       );
-
+  
       setMoviesWithDimensions(loadedMovies);
     };
-
+  
     loadImages();
   }, [searchedMovies]);
 
@@ -115,11 +142,12 @@ const Search = () => {
 
           return (
             <TouchableOpacity onPress={() => navigation.navigate('MoviePage', { uri: movieImage.uri ? movieImage.uri : '', title: item.title, description: item.description, genreList: item.genreList, releaseYear: item.releaseDate, streamingList: item.watchProviders ? item.watchProviders : [] })} style={[styles.itemContainer, { height: itemHeight }]}>
-              <Image source={movieImage} style={styles.posterImage} />
+              <Image source={movieImage} style={styles.posterImage} onLoadStart={item.onImageLoadStart} onLoadEnd={item.onImageLoadEnd} />
             </TouchableOpacity>
           );
         }}
       />
+      {isLoading && <LoadingComponent mt={106} ml={0} mr={0} mb={0} />}
     </View>
   );
 };
@@ -162,7 +190,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 45,
     color: 'white',
-    paddingLeft: 40, // Adjust the padding to ensure text does not overlap the icon
+    paddingLeft: 40,
     paddingRight: 10,
   },
 });
