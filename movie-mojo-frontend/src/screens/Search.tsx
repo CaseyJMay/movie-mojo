@@ -46,6 +46,7 @@ const Search = () => {
     debounce(() => {
         setDebouncedSearchText(text);
         setLoadingImagesCount(0);
+        setSearchedMovies([])
         setIsLoading(true); // Start loading after the debounce delay
     }, 300);
 };
@@ -61,7 +62,6 @@ const Search = () => {
 
   useEffect(() => {
     if (data) {
-      console.log('there is data',  debouncedSearchText)
       if (data.getMoviesBySearchTerm.length === 0 && debouncedSearchText != '') {
         setIsLoading(false); // Stop loading if no data
         setIsNoResults(true);
@@ -71,7 +71,6 @@ const Search = () => {
         setIsNoResults(false);
       }
       if (debouncedSearchText != ''){
-        // console.log(debouncedSearchText, data)
         const movieList = data.getMoviesBySearchTerm;
         setSearchedMovies(movieList);
       }
@@ -80,14 +79,12 @@ const Search = () => {
 
   useEffect(() => {
     if ((popularMovies && debouncedSearchText == '' && searchText == '')) {
-      console.log('here is causing the extra 7')
       const movieList = popularMovies.getPopularMovies;
       setSearchedMovies(movieList);
     }
   }, [popularMovies, debouncedSearchText]);
 
   useEffect(() => {
-    console.log(loadingImagesCount)
     if (loadingImagesCount == 0){
       setIsLoading(false)
     }
@@ -113,8 +110,6 @@ const Search = () => {
       };
   
       const validMovies = searchedMovies.filter(movie => movie.posterPath);
-
-      console.log("movie length", validMovies.length)
   
       const loadedMovies: MovieWithDimensions[] = await Promise.all(
         validMovies.map(async (movie: Movie): Promise<MovieWithDimensions> => {
