@@ -9,6 +9,8 @@ import LoadingComponent from '../components/Loading';
 import { GET_MOVIES_BY_SEARCH_TERM } from '../graphql/getMoviesBySearchTerm';
 import { Movie } from '../types/types';
 import { ScreenNavigationProps } from '../navigation/RootStackParamList';
+import { GET_POPULAR_MOVIES } from '../graphql/getPopularMovies';
+import NoResultsComponent from '../components/NoResults';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -26,6 +28,8 @@ const Search = () => {
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
   const [loadingImagesCount, setLoadingImagesCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);  // Reintroduce isLoading state
+  const [isPopularLoading, setIsPopularLoading] = useState(false);
+  const [isNoResults, setIsNoResults] = useState(false);
   const navigation = useNavigation<ScreenNavigationProps>();
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,8 +43,8 @@ const Search = () => {
   const handleSearchTextChange = (text: string) => {
     setSearchText(text);
     setLoadingImagesCount(0); // Reset loading images count
-    setIsLoading(true);       // Start loading as soon as typing starts
     debounce(() => setDebouncedSearchText(text), 300);
+    setIsLoading(true);       // Start loading as soon as typing starts
   };
 
   const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
@@ -48,16 +52,35 @@ const Search = () => {
     onError: (error) => console.log(JSON.stringify(error))
   });
 
+  const { loading: popularMoviesLoading, error: popularMoviesError, data: popularMovies } = useQuery(GET_POPULAR_MOVIES, {
+    onError: (error) => console.log(JSON.stringify(error))
+  });
+
   useEffect(() => {
     if (data) {
-      if (data.getMoviesBySearchTerm.length === 0) {
+      console.log('there is data',  debouncedSearchText)
+      if (data.getMoviesBySearchTerm.length === 0 && debouncedSearchText != '') {
         setIsLoading(false); // Stop loading if no data
+        setIsNoResults(true);
         return;
       }
-      const movieList = data.getMoviesBySearchTerm;
-      setSearchedMovies(movieList);
+      else {
+        setIsNoResults(false);
+      }
+      if (debouncedSearchText != ''){
+        console.log(debouncedSearchText, data)
+        const movieList = data.getMoviesBySearchTerm;
+        setSearchedMovies(movieList);
+      }
     }
   }, [data]);
+
+  useEffect(() => {
+    if ((popularMovies && !data) || (popularMovies && debouncedSearchText == '')) {
+      const movieList = popularMovies.getPopularMovies;
+      setSearchedMovies(movieList);
+    }
+  }, [popularMovies, debouncedSearchText]);
 
   useEffect(() => {
     if (loadingImagesCount == 0){
@@ -67,6 +90,15 @@ const Search = () => {
       setIsLoading(true)
     }
   }, [loadingImagesCount])
+
+  useEffect(() => {
+    if (!popularMovies || popularMovies.getPopularMovies.length == 0){
+      setIsPopularLoading(true)
+    }
+    else {
+      setIsPopularLoading(false)
+    }
+  }, [popularMovies])
 
   useEffect(() => {
     const loadImages = async () => {
@@ -147,7 +179,10 @@ const Search = () => {
           );
         }}
       />
-      {isLoading && <LoadingComponent mt={106} ml={0} mr={0} mb={0} />}
+      {(loading || isPopularLoading) && <LoadingComponent mt={106} ml={0} mr={0} mb={0} />}
+      {isNoResults &&
+      <NoResultsComponent mt={106} ml={0} mr={0} mb={0} />
+      }
     </View>
   );
 };

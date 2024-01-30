@@ -32,6 +32,7 @@ const schema = buildSchema(`
     getUser(id: ID!): User
     getUserByUsername(username: String!): User
     getMoviesBySearchTerm(searchTerm: String!): [Movie]
+    getPopularMovies: [Movie]
   }
 `);
 
