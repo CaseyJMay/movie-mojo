@@ -25,6 +25,8 @@ interface IGenreMapper {
     10752: "War",
     37: "Western"
   };
+
+  
   
   export const getGenreString = (genreId: number): string => {
     return genreMapper[genreId] || "Unknown Genre";

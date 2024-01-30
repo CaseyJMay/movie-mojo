@@ -4,6 +4,7 @@ import { movies } from '../mockData';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNavigationProps } from '../navigation/RootStackParamList';
+import { getGenreString } from '../utils/genreMap';
 
 export default function WatchList() {
     const navigation = useNavigation<ScreenNavigationProps>();
@@ -43,7 +44,7 @@ export default function WatchList() {
                                             {movie.genreList.map((genre, index) => {
                                                 return (
                                                     <View  key={index} className='border border-1 border-white p-1 rounded-full mr-2 my-1'>
-                                                        <Text className='text-white text-[12px] font-bold mx-1'>{genre}</Text>
+                                                        <Text className='text-white text-[12px] font-bold mx-1'>{getGenreString(genre)}</Text>
                                                     </View>
                                                 )
                                             })}

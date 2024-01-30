@@ -3,10 +3,11 @@ import { View, StyleSheet, Image, Text } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadingComponent from '../components/Loading';
-import { movies } from '../mockData';
 import { useQuery } from '@apollo/client';
 import { GET_POPULAR_MOVIES } from '../graphql/getPopularMovies';
 import { Movie } from '../types/types';
+import { getGenreString } from '../utils/genreMap';
+import getYearFromDate from '../utils/getYearFromDate';
 
 const Home = () => {
     const [loadingImageCount, setLoadingImageCount] = useState(0);
@@ -81,11 +82,11 @@ const Home = () => {
                 </View>
             </View>
             <View className='flex flex-row absolute bottom-[115px] left-[20px] w-full gap-2'>
-                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.releaseDate}</Text>
+                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{getYearFromDate(card.releaseDate)}</Text>
                 <View className='rounded-full bg-[#FFFFFF] w-2 h-2 self-center' />
-                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.genreList[0]}</Text>
-                <View className='rounded-full bg-[#FFFFFF] w-2 h-2 self-center' />
-                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{card.genreList[1]}</Text>
+                <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{getGenreString(card.genreList[0])}</Text>
+                {card.genreList.length > 1 && <View className='rounded-full bg-[#FFFFFF] w-2 h-2 self-center' />}
+                {card.genreList.length > 1 && <Text numberOfLines={2} className='text-[15px] text-[#FFFFFF] font-bold max-h-[200px] text-ellipsis'>{getGenreString(card.genreList[1])}</Text>}
             </View>
           </View>
         )}}
