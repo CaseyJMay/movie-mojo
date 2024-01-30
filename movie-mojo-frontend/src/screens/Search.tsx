@@ -42,10 +42,13 @@ const Search = () => {
 
   const handleSearchTextChange = (text: string) => {
     setSearchText(text);
-    setLoadingImagesCount(0); // Reset loading images count
-    debounce(() => setDebouncedSearchText(text), 300);
-    setIsLoading(true);       // Start loading as soon as typing starts
-  };
+    // setIsLoading(true); // Start loading after the debounce delay
+    debounce(() => {
+        setDebouncedSearchText(text);
+        setLoadingImagesCount(0);
+        setIsLoading(true); // Start loading after the debounce delay
+    }, 300);
+};
 
   const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
     variables: { searchTerm: debouncedSearchText },
@@ -68,7 +71,7 @@ const Search = () => {
         setIsNoResults(false);
       }
       if (debouncedSearchText != ''){
-        console.log(debouncedSearchText, data)
+        // console.log(debouncedSearchText, data)
         const movieList = data.getMoviesBySearchTerm;
         setSearchedMovies(movieList);
       }
@@ -76,13 +79,15 @@ const Search = () => {
   }, [data]);
 
   useEffect(() => {
-    if ((popularMovies && !data) || (popularMovies && debouncedSearchText == '')) {
+    if ((popularMovies && debouncedSearchText == '' && searchText == '')) {
+      console.log('here is causing the extra 7')
       const movieList = popularMovies.getPopularMovies;
       setSearchedMovies(movieList);
     }
   }, [popularMovies, debouncedSearchText]);
 
   useEffect(() => {
+    console.log(loadingImagesCount)
     if (loadingImagesCount == 0){
       setIsLoading(false)
     }
@@ -108,6 +113,8 @@ const Search = () => {
       };
   
       const validMovies = searchedMovies.filter(movie => movie.posterPath);
+
+      console.log("movie length", validMovies.length)
   
       const loadedMovies: MovieWithDimensions[] = await Promise.all(
         validMovies.map(async (movie: Movie): Promise<MovieWithDimensions> => {
@@ -132,8 +139,8 @@ const Search = () => {
               ...movie, 
               width: 0, 
               height: 0, 
-              onImageLoadStart: () => setLoadingImagesCount(prevCount => prevCount + 1),
-              onImageLoadEnd: () => setLoadingImagesCount(prevCount => prevCount - 1),
+              onImageLoadStart: () => setLoadingImagesCount(prevCount => prevCount + 0),
+              onImageLoadEnd: () => setLoadingImagesCount(prevCount => prevCount - 0),
             };
           }
         })
@@ -179,7 +186,7 @@ const Search = () => {
           );
         }}
       />
-      {(loading || isPopularLoading) && <LoadingComponent mt={106} ml={0} mr={0} mb={0} />}
+      {(isLoading || isPopularLoading) && <LoadingComponent mt={106} ml={0} mr={0} mb={0} />}
       {isNoResults &&
       <NoResultsComponent mt={106} ml={0} mr={0} mb={0} />
       }
