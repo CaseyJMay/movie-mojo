@@ -121,10 +121,10 @@ export default function Profile() {
                         }
                         if (!activeStreaming[streamingService]){
                             return (
-                                <TouchableOpacity activeOpacity={1} key={index}className='w-[90px] h-[90px] self-center' onPress={() => toggleStreaming(streamingService)}>
+                                <TouchableOpacity activeOpacity={1} key={index}className='w-[110px] h-[110px] self-center p-[5px]' onPress={() => toggleStreaming(streamingService)}>
                                     <Image 
                                         key={index}
-                                        className='w-[90px] h-[90px] self-center rounded-xl opacity-50'
+                                        className='w-[100px] h-[100px] self-center rounded-xl opacity-50'
                                         source={streamingServiceIcons[streamingService]} 
                                     />
                                 </TouchableOpacity>
