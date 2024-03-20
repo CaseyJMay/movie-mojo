@@ -14,6 +14,7 @@ const MoviePoster: React.FC<MoviePosterProps> = ({ uri }) => {
 
   useEffect(() => {
     setIsLoading(true); // Reset loading state when URI changes
+    console.log(uri)
   }, [uri]);
 
   return (
@@ -22,7 +23,8 @@ const MoviePoster: React.FC<MoviePosterProps> = ({ uri }) => {
         <ActivityIndicator size="large" color="#0000ff" style={{ position: 'absolute', top: '50%', left: '50%', transform: [{ translateX: -25 }, { translateY: -25 }] }} />
       )}
       <Image
-        source={{ uri }}
+        // source={`${`https://image.tmdb.org/t/p/w500/`}+ ${uri}`}
+        source={{uri: `${`https://image.tmdb.org/t/p/w500/`}+ ${uri}`}}
         className='self-center'
         style={{ height: imageHeight, width: imageWidth, opacity: isLoading ? 0 : 1, position: 'absolute', top: 0, left: 0 }}
         onLoad={() => setIsLoading(false)}

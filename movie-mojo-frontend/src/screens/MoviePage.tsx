@@ -7,7 +7,7 @@ import { Image } from 'react-native';
 import MoviePoster from '../components/MoviePoster';
 import { StreamingServiceIcons } from './Profile';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { getGenreString } from '../utils/genreMap';
 
 const MoviePage = ({route}: any) => {
     const navigation = useNavigation();
@@ -15,10 +15,12 @@ const MoviePage = ({route}: any) => {
 
     const streamingServiceIcons: StreamingServiceIcons = {
         'hulu': require('../public/assets/hulu.png'),
+        'HBO Max': require('../public/assets/hboMax.png'),
         'netflix': require('../public/assets/netflix.png'),
         'max': require('../public/assets/max.png'),
         'peacock': require('../public/assets/peacock.png'),
-        'prime': require('../public/assets/prime.png')
+        'prime': require('../public/assets/prime.png'),
+        'Disney Plus': require('../public/assets/disneyPlus.png'),
     };
 
   return (
@@ -45,7 +47,7 @@ const MoviePage = ({route}: any) => {
                         <Image 
                             key={index}
                             className='w-[38px] h-[38px] self-center rounded-md'
-                            source={streamingServiceIcons[streamingService]} 
+                            source={streamingServiceIcons[streamingService.provider_name]} 
                         />
                     );
                 })}
@@ -55,7 +57,7 @@ const MoviePage = ({route}: any) => {
                 {params.genreList.map((genre: any, index: any) => {
                     return (
                         <View key={index} className='w-fit h-fit rounded-full border-2 border-[#D4AF37] px-3 py-2 mt-2'>
-                            <Text key={index} className='text-[#D4AF37] text-[14px] font-bold'>{genre}</Text>
+                            <Text key={index} className='text-[#D4AF37] text-[14px] font-bold'>{getGenreString(genre)}</Text>
                         </View>
                     )
                 })}
