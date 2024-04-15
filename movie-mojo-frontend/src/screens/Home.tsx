@@ -13,6 +13,8 @@ const Home = () => {
     const [loadingImageCount, setLoadingImageCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+    const [swipeDirection, setSwipeDirection] = useState<String | null>(null);
+
 
     const { loading, error, data } = useQuery(GET_POPULAR_MOVIES, {
       onError: (error) => console.log(JSON.stringify(error))
@@ -26,14 +28,30 @@ const Home = () => {
         setLoadingImageCount(prevCount => prevCount - 1);
     };
 
-    // useEffect(() => {
-    //   if (loadingImageCount == 0){
-    //     setIsLoading(false)
-    //   }
-    //   else {
-    //     setIsLoading(true)
-    //   }
-    // }, [loadingImageCount])
+    const resetSwipeDirection = () => {
+      setSwipeDirection(null);
+  };
+
+    const getCardStyle = () => {
+      switch (swipeDirection) {
+          case 'right':
+              return { borderColor: 'green', borderWidth: 4 };
+          case 'left':
+              return { borderColor: 'red', borderWidth: 4 };
+          default:
+            return { borderColor: 'black', borderWidth: 4 };
+          }
+  };
+
+    const handleSwiping = (x: number) => {
+      if (x > 10) {
+          setSwipeDirection('right');
+      } else if (x < 10) {
+          setSwipeDirection('left');
+      } else {
+          setSwipeDirection(null);
+      }
+  };
 
     useEffect(() => {
       if (data && Array.isArray(data.getPopularMovies)) {
@@ -50,11 +68,14 @@ const Home = () => {
           cardVerticalMargin={0}
           cardHorizontalMargin={0}
           showSecondCard={true}
+          onSwiping={handleSwiping}
+          onSwiped={resetSwipeDirection}
+          onSwipedAborted={resetSwipeDirection}
           renderCard={(card) => {
             const posterPath = `http://image.tmdb.org/t/p/original${card.posterPath}`;
             return (
-              <View style={styles.card}>
-                <Image
+              <View style={[styles.card, getCardStyle()]}>
+              <Image
                   source={{ uri: posterPath }}
                   style={styles.image}
                   onLoadStart={handleImageLoadStart}

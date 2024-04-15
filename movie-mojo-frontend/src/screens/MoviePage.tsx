@@ -4,7 +4,6 @@ import { Button, View, Text, ImageSourcePropType, Image } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MoviePoster from '../components/MoviePoster';
-import { StreamingServiceIcons } from './Profile';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getGenreString } from '../utils/genreMap';
 import LoadingComponent from '../components/Loading';
@@ -13,16 +12,6 @@ const MoviePage = ({route}: any) => {
     const navigation = useNavigation();
     const params = route?.params
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const streamingServiceIcons: StreamingServiceIcons = {
-        'hulu': require('../public/assets/hulu.png'),
-        'HBO Max': require('../public/assets/hboMax.png'),
-        'netflix': require('../public/assets/netflix.png'),
-        'max': require('../public/assets/max.png'),
-        'peacock': require('../public/assets/peacock.png'),
-        'prime': require('../public/assets/prime.png'),
-        'Disney Plus': require('../public/assets/disneyPlus.png'),
-    };
 
     return (
         <ScrollView className=''>
