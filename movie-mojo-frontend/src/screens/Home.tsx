@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,12 +8,14 @@ import { GET_POPULAR_MOVIES } from '../graphql/getPopularMovies';
 import { Movie } from '../types/types';
 import { getGenreString } from '../utils/genreMap';
 import getYearFromDate from '../utils/getYearFromDate';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Home = () => {
     const [loadingImageCount, setLoadingImageCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
     const [swipeDirection, setSwipeDirection] = useState<String | null>(null);
+    const [idNum, setIdNum] = useState<number>(0);
 
 
     const { loading, error, data } = useQuery(GET_POPULAR_MOVIES, {
@@ -29,21 +31,42 @@ const Home = () => {
     };
 
     const resetSwipeDirection = () => {
+      console.log('resetting swipe direction')
       setSwipeDirection(null);
   };
 
-    const getCardStyle = () => {
-      switch (swipeDirection) {
-          case 'right':
-              return { borderColor: 'green', borderWidth: 4 };
-          case 'left':
-              return { borderColor: 'red', borderWidth: 4 };
-          default:
-            return { borderColor: 'black', borderWidth: 4 };
-          }
-  };
+  const cardStyle = useMemo(() => {
+    console.log('Recalculating style for swipeDirection:', swipeDirection);
+    switch (swipeDirection) {
+        case 'right':
+            return {
+                borderRightColor: 'green', // Apply green to the right border
+                borderRightWidth: 20,
+                borderLeftWidth: 0, // No border on the left
+                borderTopWidth: 0, // No border on the top
+                borderBottomWidth: 0 // No border on the bottom
+            };
+        case 'left':
+            return {
+                borderLeftColor: 'red', // Apply red to the left border
+                borderLeftWidth: 20,
+                borderRightWidth: 0, // No border on the right
+                borderTopWidth: 0, // No border on the top
+                borderBottomWidth: 0 // No border on the bottom
+            };
+        case null:
+            return {
+                borderRightWidth: 0,
+                borderLeftWidth: 0,
+                borderTopWidth: 0,
+                borderBottomWidth: 0
+            };
+    }
+}, [swipeDirection]); // Dependency array
+
 
     const handleSwiping = (x: number) => {
+      console.log('handling swiping')
       if (x > 10) {
           setSwipeDirection('right');
       } else if (x < 10) {
@@ -51,6 +74,7 @@ const Home = () => {
       } else {
           setSwipeDirection(null);
       }
+      setIdNum(idNum + 1)
   };
 
     useEffect(() => {
@@ -62,7 +86,7 @@ const Home = () => {
   }, [data]);
 
     return (
-      <View style={styles.container}>
+      <View style={[styles.container]}>
         {popularMovies.length > 0 && <Swiper
           cards={popularMovies}
           cardVerticalMargin={0}
@@ -74,7 +98,7 @@ const Home = () => {
           renderCard={(card) => {
             const posterPath = `http://image.tmdb.org/t/p/original${card.posterPath}`;
             return (
-              <View style={[styles.card, getCardStyle()]}>
+              <View id={`${idNum}`} style={[styles.card]}>
               <Image
                   source={{ uri: posterPath }}
                   style={styles.image}
@@ -116,6 +140,7 @@ const Home = () => {
         stackSize={3}
         containerStyle={styles.swiperContainer}
       />}
+      <SafeAreaView pointerEvents='box-none' style={cardStyle} className='w-full h-full opacity-20' />
       {loading && <LoadingComponent mt={0} mb={0} ml={0} mr={0} />}
     </View>
   );
