@@ -8,7 +8,6 @@ import { GET_POPULAR_MOVIES } from '../graphql/getPopularMovies';
 import { Movie } from '../types/types';
 import { getGenreString } from '../utils/genreMap';
 import getYearFromDate from '../utils/getYearFromDate';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import GradientWrapper from '../components/GradientView';
 import { Side } from '../components/GradientView';
 
@@ -33,50 +32,18 @@ const Home = () => {
     };
 
     const resetSwipeDirection = () => {
-      console.log('resetting swipe direction')
       setSwipeDirection(null);
   };
 
-  const cardStyle = useMemo(() => {
-    console.log('Recalculating style for swipeDirection:', swipeDirection);
-    switch (swipeDirection) {
-        case 'right':
-            return {
-                borderRightColor: 'green', // Apply green to the right border
-                borderRightWidth: 20,
-                borderLeftWidth: 0, // No border on the left
-                borderTopWidth: 0, // No border on the top
-                borderBottomWidth: 0 // No border on the bottom
-            };
-        case 'left':
-            return {
-                borderLeftColor: 'red', // Apply red to the left border
-                borderLeftWidth: 20,
-                borderRightWidth: 0, // No border on the right
-                borderTopWidth: 0, // No border on the top
-                borderBottomWidth: 0 // No border on the bottom
-            };
-        case null:
-            return {
-                borderRightWidth: 0,
-                borderLeftWidth: 0,
-                borderTopWidth: 0,
-                borderBottomWidth: 0
-            };
-    }
-}, [swipeDirection]); // Dependency array
-
 
     const handleSwiping = (x: number) => {
-      console.log('handling swiping')
-      if (x > 40) {
+      if (x > 25) {
           setSwipeDirection('right');
-      } else if (x < -40) {
+      } else if (x < -25) {
           setSwipeDirection('left');
       } else {
           setSwipeDirection(null);
       }
-      setIdNum(idNum + 1)
   };
 
     useEffect(() => {
@@ -100,7 +67,7 @@ const Home = () => {
           renderCard={(card) => {
             const posterPath = `http://image.tmdb.org/t/p/original${card.posterPath}`;
             return (
-              <View id={`${idNum}`} style={[styles.card]}>
+              <View style={[styles.card]}>
               <Image
                   source={{ uri: posterPath }}
                   style={styles.image}
@@ -142,9 +109,6 @@ const Home = () => {
         stackSize={3}
         containerStyle={styles.swiperContainer}
       />}
-      {/* <SafeAreaView pointerEvents='box-none' style={cardStyle} className='w-full h-full opacity-80' /> */}
-      {/* {swipeDirection === 'right' && <View className='w-[75px]' style={styles.rightIndicator}></View>}
-      {swipeDirection === 'left' && <View className='w-[75px]' style={styles.leftIndicator}></View>} */}
       {swipeDirection === 'left' && <GradientWrapper side={Side.Left}>{}</GradientWrapper>}
       {swipeDirection === 'right' && <GradientWrapper side={Side.Right}>{}</GradientWrapper>}
 
