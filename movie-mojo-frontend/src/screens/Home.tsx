@@ -9,6 +9,8 @@ import { Movie } from '../types/types';
 import { getGenreString } from '../utils/genreMap';
 import getYearFromDate from '../utils/getYearFromDate';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import GradientWrapper from '../components/GradientView';
+import { Side } from '../components/GradientView';
 
 const Home = () => {
     const [loadingImageCount, setLoadingImageCount] = useState(0);
@@ -67,9 +69,9 @@ const Home = () => {
 
     const handleSwiping = (x: number) => {
       console.log('handling swiping')
-      if (x > 10) {
+      if (x > 40) {
           setSwipeDirection('right');
-      } else if (x < 10) {
+      } else if (x < -40) {
           setSwipeDirection('left');
       } else {
           setSwipeDirection(null);
@@ -140,13 +142,37 @@ const Home = () => {
         stackSize={3}
         containerStyle={styles.swiperContainer}
       />}
-      <SafeAreaView pointerEvents='box-none' style={cardStyle} className='w-full h-full opacity-20' />
+      {/* <SafeAreaView pointerEvents='box-none' style={cardStyle} className='w-full h-full opacity-80' /> */}
+      {/* {swipeDirection === 'right' && <View className='w-[75px]' style={styles.rightIndicator}></View>}
+      {swipeDirection === 'left' && <View className='w-[75px]' style={styles.leftIndicator}></View>} */}
+      {swipeDirection === 'left' && <GradientWrapper side={Side.Left}>{}</GradientWrapper>}
+      {swipeDirection === 'right' && <GradientWrapper side={Side.Right}>{}</GradientWrapper>}
+
+
       {loading && <LoadingComponent mt={0} mb={0} ml={0} mr={0} />}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  rightIndicator: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 10,
+},
+leftIndicator: {
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  bottom: 0,
+  backgroundColor: 'white',
+  padding: 10,
+  borderRadius: 10,
+},
   container: {
     flex: 1,
     backgroundColor: 'black',
