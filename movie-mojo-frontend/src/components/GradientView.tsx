@@ -19,17 +19,17 @@ const GradientWrapper = ({ children, side }: GradientWrapperProps ) => {
     <View style={styles.container}>
     { side == Side.Left ?
       <LinearGradient
-        colors={['#80002090', 'transparent']}
+        colors={['#800020', 'transparent']}
         start={{ x: 0, y: 0 }}
-        end={{ x: .5, y: 0 }}
+        end={{ x: .3, y: 0 }}
         style={styles.gradientStyle}
       >
         {children}
       </LinearGradient> :
       <LinearGradient
-            colors={['#D4AF3790', 'transparent']}
+            colors={['#D4AF37', 'transparent']}
             start={{ x: 1, y: 0 }}
-            end={{ x: .5, y: 0 }}
+            end={{ x: .7, y: 0 }}
             style={styles.gradientStyle}
             >
             {children}

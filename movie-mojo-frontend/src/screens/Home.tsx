@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Text } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadingComponent from '../components/Loading';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { GET_POPULAR_MOVIES } from '../graphql/getPopularMovies';
 import { Movie } from '../types/types';
 import { getGenreString } from '../utils/genreMap';
@@ -11,17 +11,41 @@ import getYearFromDate from '../utils/getYearFromDate';
 import GradientWrapper from '../components/GradientView';
 import { Side } from '../components/GradientView';
 
+
 const Home = () => {
     const [loadingImageCount, setLoadingImageCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
     const [swipeDirection, setSwipeDirection] = useState<String | null>(null);
-    const [idNum, setIdNum] = useState<number>(0);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isFetching, setIsFetching] = useState(false);
 
 
-    const { loading, error, data } = useQuery(GET_POPULAR_MOVIES, {
-      onError: (error) => console.log(JSON.stringify(error))
+    const [ fetchData, {loading, error, data }] = useLazyQuery(GET_POPULAR_MOVIES, {
+      variables: { pageNumber: pageNumber },
+      onError: (error) => console.log(JSON.stringify(error)),
+      onCompleted: () => setIsFetching(false)
     });
+
+    useEffect(() => {
+      if (pageNumber > 0) {
+        console.log('fetching data here!')
+        fetchData({
+          variables: {
+            pageNumber: pageNumber
+          },
+        });
+      }
+    }, [pageNumber]);
+    
+    
+    useEffect(() => {
+      if (!loading && data && Array.isArray(data.getPopularMovies)) {
+        console.log('setting popular movies', data.getPopularMovies)
+        setPopularMovies((prevMovies) => [...prevMovies, ...data.getPopularMovies]);
+      }
+    }, [data, loading]);
+    
 
     const handleImageLoadStart = () => {
         setLoadingImageCount(prevCount => prevCount + 1);
@@ -33,6 +57,16 @@ const Home = () => {
 
     const resetSwipeDirection = () => {
       setSwipeDirection(null);
+  };
+
+  const onSwiped = (cardIndex: number) => {
+    console.log(cardIndex, popularMovies.length)
+    if (cardIndex === popularMovies.length - 1) { // Check if the last card was swiped
+      setIsFetching(true);
+      setPageNumber((prevPageNumber) => prevPageNumber + 1); // Increment page number to fetch next page
+      console.log("isFetching")
+    }
+    resetSwipeDirection();
   };
 
 
@@ -57,12 +91,13 @@ const Home = () => {
     return (
       <View style={[styles.container]}>
         {popularMovies.length > 0 && <Swiper
+          key={popularMovies.length}
           cards={popularMovies}
           cardVerticalMargin={0}
           cardHorizontalMargin={0}
           showSecondCard={true}
           onSwiping={handleSwiping}
-          onSwiped={resetSwipeDirection}
+          onSwiped={onSwiped}
           onSwipedAborted={resetSwipeDirection}
           renderCard={(card) => {
             const posterPath = `http://image.tmdb.org/t/p/original${card.posterPath}`;
@@ -113,7 +148,7 @@ const Home = () => {
       {swipeDirection === 'right' && <GradientWrapper side={Side.Right}>{}</GradientWrapper>}
 
 
-      {loading && <LoadingComponent mt={0} mb={0} ml={0} mr={0} />}
+      {loading || isFetching && <LoadingComponent mt={0} mb={0} ml={0} mr={0} />}
     </View>
   );
 };

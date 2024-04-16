@@ -62,8 +62,8 @@ const root = {
         return []; // Return an empty array or handle the error as needed
       }
     },
-    getPopularMovies: async () => {
-        const url = 'https://api.themoviedb.org/3/trending/movie/day?language=en-US&include_adult=false';
+    getPopularMovies: async ({pageNumber}) => {
+        const url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${pageNumber}&sort_by=popularity.desc`;
         const options = {
             method: 'GET',
             headers: {

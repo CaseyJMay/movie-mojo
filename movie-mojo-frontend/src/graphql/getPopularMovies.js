@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_POPULAR_MOVIES = gql`
-  query GetPopularMovies {
-    getPopularMovies {
+  query GetPopularMovies($pageNumber: Int!) {
+    getPopularMovies(pageNumber: $pageNumber) {
       id
       title
       description

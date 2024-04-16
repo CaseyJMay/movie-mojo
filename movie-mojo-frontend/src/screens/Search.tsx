@@ -57,6 +57,7 @@ const Search = () => {
   });
 
   const { loading: popularMoviesLoading, error: popularMoviesError, data: popularMovies } = useQuery(GET_POPULAR_MOVIES, {
+    variables: { pageNumber: 1 },
     onError: (error) => console.log(JSON.stringify(error))
   });
 
