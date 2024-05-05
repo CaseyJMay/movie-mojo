@@ -51,15 +51,24 @@ const Search = () => {
     }, 300);
 };
 
-  const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
-    variables: { searchTerm: debouncedSearchText },
-    onError: (error) => console.log(JSON.stringify(error))
-  });
 
-  const { loading: popularMoviesLoading, error: popularMoviesError, data: popularMovies } = useQuery(GET_POPULAR_MOVIES, {
-    variables: { pageNumber: 1 },
-    onError: (error) => console.log(JSON.stringify(error))
-  });
+const { loading, error, data } = useQuery(GET_MOVIES_BY_SEARCH_TERM, {
+  variables: { searchTerm: debouncedSearchText },
+  onError: (error) => {
+    console.error("GraphQL Query Error:", JSON.stringify(error, null, 2));
+  }
+});
+
+const { loading: popularMoviesLoading, error: popularMoviesError, data: popularMovies } = useQuery(GET_POPULAR_MOVIES, {
+  variables: { pageNumber: 1 },
+  onError: (error) => {
+    console.error("GraphQL Query Error for Popular Movies:", JSON.stringify(error, null, 2));
+  }
+});
+
+useEffect(() => {
+  console.log("error information", popularMoviesError?.networkError?.message, error?.networkError?.message)
+}, [popularMoviesError, error])
 
   useEffect(() => {
     if (data) {
